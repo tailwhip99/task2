@@ -3,26 +3,43 @@ import pandas as pd
 
 def calculate_demographic_data(print_data=True):
     # Read data from file
-    df = None
+    df = pd.read_csv('adult.data.csv')
 
     # How many of each race are represented in this dataset? This should be a Pandas series with race names as the index labels.
-    race_count = None
-
+    race_count = df['race'].value_counts()
+ 
     # What is the average age of men?
-    average_age_men = None
+    average_age_men = df[df['sex']== 'Male']['age'].mean()
 
     # What is the percentage of people who have a Bachelor's degree?
-    percentage_bachelors = None
+    percentage_bachelors = (df[df['education'] == 'Bachelors'].count() / df[['education']].count()) * 100
 
     # What percentage of people with advanced education (`Bachelors`, `Masters`, or `Doctorate`) make more than 50K?
     # What percentage of people without advanced education make more than 50K?
 
     # with and without `Bachelors`, `Masters`, or `Doctorate`
-    higher_education = None
+    advanced_education = ['Bachelors', 'Masters', 'Doctorate']
+
+# Filter for people with advanced education
+    advanced_education_df = df[df['education'].isin(advanced_education)]
+
+# Count total people with advanced education
+    total_advanced_education = advanced_education_df['education'].count()
+
+# Filter for people with advanced education making more than 50K
+    advanced_education_high_income = advanced_education_df[advanced_education_df['salary'] == '>50K']
+
+# Count people with advanced education making more than 50K
+    count_advanced_high_income = advanced_education_high_income['salary'].count()
+
+# Calculate the percentage
+    percentage_advanced_high_income = (count_advanced_high_income / total_advanced_education) * 100
+
+
     lower_education = None
 
     # percentage with salary >50K
-    higher_education_rich = None
+    higher_education_rich = percentage_advanced_high_income
     lower_education_rich = None
 
     # What is the minimum number of hours a person works per week (hours-per-week feature)?
@@ -46,7 +63,7 @@ def calculate_demographic_data(print_data=True):
         print("Number of each race:\n", race_count) 
         print("Average age of men:", average_age_men)
         print(f"Percentage with Bachelors degrees: {percentage_bachelors}%")
-        print(f"Percentage with higher education that earn >50K: {higher_education_rich}%")
+        print(f"Percentage with higher education that earn >50K: {round(higher_education_rich,2)}%")
         print(f"Percentage without higher education that earn >50K: {lower_education_rich}%")
         print(f"Min work time: {min_work_hours} hours/week")
         print(f"Percentage of rich among those who work fewest hours: {rich_percentage}%")
@@ -57,7 +74,7 @@ def calculate_demographic_data(print_data=True):
     return {
         'race_count': race_count,
         'average_age_men': average_age_men,
-        'percentage_bachelors': percentage_bachelors,
+        'percentage_bachelors': percentage_bachelors + "%",
         'higher_education_rich': higher_education_rich,
         'lower_education_rich': lower_education_rich,
         'min_work_hours': min_work_hours,
